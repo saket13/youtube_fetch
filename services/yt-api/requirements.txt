@@ -3,3 +3,4 @@ Flask-SQLAlchemy
 psycopg2-binary
 celery
 redis
+python-dotenv

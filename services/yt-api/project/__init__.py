@@ -22,7 +22,4 @@ def make_celery(app):
 
 celery_app = make_celery(app)
 
-
-@app.route("/")
-def hello_world():
-    return jsonify(hello="world")
+from project.views import *
