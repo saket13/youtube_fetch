@@ -3,8 +3,8 @@ from celery.schedules import crontab
 
 
 celery_app.conf.beat_schedule = {
-    "run-me-every-ten-seconds": {
-        "task": "project.tasks.check",
+    "async-fetch-videos-every-minute": {
+        "task": "project.tasks.fetch",
         "schedule": 60.0
     }
 }

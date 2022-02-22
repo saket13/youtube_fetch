@@ -1,25 +1,33 @@
 import json
 import requests
+import dateutil
 from datetime import datetime
 from project.models import Video
 from project import app, db, celery_app
 
 @celery_app.task
-def check():
+def fetch():
     search_url = 'https://www.googleapis.com/youtube/v3/search'
     
     search_params = {
         'part' : 'snippet',
         'q' : 'cricket',
         'maxResults' : 10,
-        'type' : 'video',
-        'publishedAfter' : '2020-01-22T12:32:39Z'
+        'type' : 'video'
     }
 
     try:
-        search_params.update({'key' : app.config['YOUTUBE_DATA_API_KEY']})
+        latest_entity = Video.query.order_by(Video.publish_time.desc()).limit(1).all()
+        latest_publish_time = app.config['DEFAULT_PUBLISH_TIME']
+        if len(latest_entity):
+            latest_publish_time = latest_entity[0].publish_time
+            latest_publish_time = datetime.strptime(str(latest_publish_time), '%Y.%m.%dT%H:%M:%S+00:00Z')
+            search_params.update({'publishedAfter' : latest_publish_time})
+        
+        search_params.update({'publishedAfter' : latest_publish_time,
+                               'key' : app.config['YOUTUBE_DATA_API_KEY']}) 
+
         r = requests.get(search_url, params=search_params)
-        print(r.json())
         results = r.json()['items']
         
 
@@ -39,6 +47,7 @@ def check():
                                  channel_title=channel_title,
                                  publish_time=video_publish_time))
             db.session.commit()
+
     except Exception as e:
         print('Error bcoz {}'.format(str(e)))
         pass

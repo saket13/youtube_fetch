@@ -8,6 +8,7 @@ class Config(object):
     CELERY_BACKEND = 'redis://redis:6379/0'
     CELERY_BROKER_URL = 'redis://redis:6379/0'
     YOUTUBE_DATA_API_KEY = ''
+    DEFAULT_PUBLISH_TIME = '2020-01-22T12:32:39Z'
     task_serializer = 'json'
     result_serializer = 'json'
     accept_content = ['json']
