@@ -49,5 +49,5 @@ def fetch():
             db.session.commit()
 
     except Exception as e:
-        print('Error bcoz {}'.format(str(e)))
+        print('Error -- {}'.format(str(e)))
         pass
