@@ -22,5 +22,29 @@ services:
       - POSTGRES_PASSWORD=hello_flask
       - POSTGRES_DB=hello_flask_dev
 
+  redis:
+    image: redis:alpine
+    command: redis-server
+
+  celery:
+    build: ./services/yt-api
+    command: celery -A project.celery_app worker -l info -E
+    volumes:
+      - ./services/yt-api/:/usr/src/app/
+    environment:
+      - ./.env.dev
+    depends_on:
+      - redis
+
+  celery-beat:
+    build: ./services/yt-api
+    command: celery -A project.celerybeat beat -l info
+    volumes:
+      - ./services/yt-api/:/usr/src/app/
+    environment:
+      - ./.env.dev
+    depends_on:
+      - redis
+
 volumes:
   postgres_data:
