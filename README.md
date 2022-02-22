@@ -66,6 +66,7 @@ In URL-2 query string to be searched.
 - [x] Paginated GET API to fetch videos in descending order of published date time
 - [x] Basic search API to search the stored videos using their title and description.
 - [x] Dockerize the Project
+- [x] Cache Support in APIs
 - [ ] Dashboards view the stored videos with filters and sorting options
 - [ ] Multi Key Support
 
