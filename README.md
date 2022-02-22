@@ -43,10 +43,9 @@ docker-compose exec web python manage.py create_db
 **Containers:**
 
 <p float="left">
-  <img src="/images/containers.png" width="500" />
-  <img src="/images/Scheduler.png" width="500" /> 
+  <img src="/images/containers.png" width="400" />
+  <img src="/images/Scheduler.png" width="400" /> 
 </p>
-|:---:|:---:|
 | Containers | Scheduler |
 
 ### Testing
