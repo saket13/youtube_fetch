@@ -44,7 +44,6 @@ def search_videos():
 
     cached_videos = cache.get('/search/'+query)
     if cached_videos:
-        print('served from cache')
         return cached_videos
 
     response_dict = {
