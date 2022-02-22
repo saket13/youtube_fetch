@@ -8,7 +8,7 @@ class Config(object):
     CELERY_BACKEND = os.getenv("CELERY_BACKEND")
     CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
     CELERY_TIMEZONE = os.getenv("CELERY_TIMEZONE")
-    broker_url = 'redis://redis:6379/0'
+    broker_url = os.getenv("CELERY_BROKER_URL")
     task_serializer = 'json'
     result_serializer = 'json'
     accept_content = ['json']
