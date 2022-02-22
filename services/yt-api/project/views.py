@@ -1,12 +1,16 @@
 from flask import request, jsonify
-from project import app, db, celery_app
 from project.models import Video
+from project import app, db, celery_app, cache
 
 
 @app.route('/videos')
 def fetch_videos():
     page = request.args.get('page', 1, type = int)
     limit = request.args.get('limit', 5, type = int)
+
+    cached_videos = cache.get('/videos/'+str(page)+str(limit))
+    if cached_videos:
+        return cached_videos
 
     response_dict = {
         'success' : False,
@@ -29,13 +33,19 @@ def fetch_videos():
         response_dict.update({
             'error' : str(e)
         })
-
+    
+    cache.set('/videos/'+str(page)+str(limit), response_dict, timeout=3600)
     return response_dict
 
 @app.route('/search')
 def search_videos():
 
     query = request.args.get('q', type = str)
+
+    cached_videos = cache.get('/search/'+query)
+    if cached_videos:
+        print('served from cache')
+        return cached_videos
 
     response_dict = {
         'success' : False,
@@ -56,4 +66,5 @@ def search_videos():
             'error' : str(e)
         })
 
+    cache.set('/search/'+query, response_dict, timeout=3600)
     return response_dict

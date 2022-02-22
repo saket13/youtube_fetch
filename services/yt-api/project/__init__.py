@@ -1,10 +1,12 @@
 from celery import Celery
 from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from flask_caching import Cache
 
 app = Flask(__name__)
 app.config.from_object("project.config.Config")
 db = SQLAlchemy(app)
+cache = Cache(app)
 
 def make_celery(app):
     celery = Celery(app.import_name, backend=app.config['CELERY_BROKER_URL'],

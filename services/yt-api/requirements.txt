@@ -6,3 +6,4 @@ redis
 python-dotenv
 requests
 python-dateutil
+Flask-Caching
