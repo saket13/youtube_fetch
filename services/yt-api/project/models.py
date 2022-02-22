@@ -20,3 +20,13 @@ class Video(db.Model):
         self.thumbnail = thumbnail
         self.channel_title = channel_title
         self.publish_time = publish_time
+
+    def format(self):
+        return {
+            'video_id': self.video_id,
+            'title': self.title,
+            'description': self.description,
+            'thumbnail': self.thumbnail,
+            'channel_title' : self.channel_title,
+            'publish_time' : self.publish_time
+        }

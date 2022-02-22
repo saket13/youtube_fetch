@@ -19,7 +19,9 @@ def check():
     try:
         search_params.update({'key' : app.config['YOUTUBE_DATA_API_KEY']})
         r = requests.get(search_url, params=search_params)
+        print(r.json())
         results = r.json()['items']
+        
 
         for item in results:
             video_id = item.get('id').get('videoId')
@@ -38,5 +40,5 @@ def check():
                                  publish_time=video_publish_time))
             db.session.commit()
     except Exception as e:
-        print(str(e))
+        print('Error bcoz {}'.format(str(e)))
         pass
