@@ -1,6 +1,8 @@
+import json
 from flask import request, jsonify
 from project.models import Video
 from project import app, db, celery_app, cache
+from project.utils import search
 
 
 @app.route('/videos')
@@ -10,6 +12,7 @@ def fetch_videos():
 
     cached_videos = cache.get('/videos/'+str(page)+str(limit))
     if cached_videos:
+        print('served from cache')
         return cached_videos
 
     response_dict = {
@@ -41,6 +44,11 @@ def fetch_videos():
 def search_videos():
 
     query = request.args.get('q', type = str)
+    search_object = {'query': {'match': {'title': 'NCERT'}}}
+    search('videos', json.dumps(search_object))
+    return 'Done'
+
+    '''
 
     cached_videos = cache.get('/search/'+query)
     if cached_videos:
@@ -67,3 +75,4 @@ def search_videos():
 
     cache.set('/search/'+query, response_dict, timeout=3600)
     return response_dict
+    '''

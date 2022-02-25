@@ -7,3 +7,4 @@ python-dotenv
 requests
 python-dateutil
 Flask-Caching
+elasticsearch==7.9.1

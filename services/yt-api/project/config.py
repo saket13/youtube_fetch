@@ -1,22 +1,26 @@
 import os
+from pathlib import Path
+from dotenv import load_dotenv
 
-basedir = os.path.abspath(os.path.dirname(__file__))
+ENV_PATH = Path('.env')
+load_dotenv(dotenv_path=ENV_PATH)
 
 class Config(object):
-    SQLALCHEMY_DATABASE_URI = 'postgresql://hello_flask:hello_flask@db:5432/hello_flask_dev'
+    SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    CELERY_BACKEND = 'redis://redis:6379/0'
-    CELERY_BROKER_URL = 'redis://redis:6379/0'
-    YOUTUBE_DATA_API_KEY = ''
-    DEFAULT_PUBLISH_TIME = '2020-01-22T12:32:39Z'
+    CELERY_BACKEND = os.getenv('CELERY_BACKEND')
+    CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
+    YOUTUBE_DATA_API_KEY = os.getenv('YOUTUBE_DATA_API_KEY')
     task_serializer = 'json'
     result_serializer = 'json'
     accept_content = ['json']
     timezone = 'Europe/Dublin'
     enable_utc = True
-    CACHE_TYPE = 'redis'
-    CACHE_REDIS_HOST = 'redis://redis:6379'
-    CACHE_REDIS_PORT = 6379
-    CACHE_REDIS_DB = 0
-    CACHE_REDIS_URL = 'redis://redis:6379'
-    CACHE_DEFAULT_TIMEOUT = 500
+    CACHE_TYPE = os.getenv('CACHE_TYPE')
+    CACHE_REDIS_HOST = os.getenv('CACHE_REDIS_HOST')
+    CACHE_REDIS_PORT = os.getenv('CACHE_REDIS_PORT')
+    CACHE_REDIS_DB = os.getenv('CACHE_REDIS_DB')
+    CACHE_REDIS_URL = os.getenv('CACHE_REDIS_URL')
+    CACHE_DEFAULT_TIMEOUT = os.getenv('CACHE_DEFAULT_TIMEOUT')
+    ES_HOST = os.getenv('ES_HOST')
+    ES_PORT = os.getenv('ES_PORT')

@@ -9,31 +9,33 @@ services:
     ports:
       - 5000:5000
     env_file:
-      - ./.env.dev
+      - ./services/yt-api/project/.env
     depends_on:
       - db
+      - redis
 
   db:
     image: postgres:13-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data/
-    environment:
-      - POSTGRES_USER=hello_flask
-      - POSTGRES_PASSWORD=hello_flask
-      - POSTGRES_DB=hello_flask_dev
+    env_file:
+      - ./services/yt-api/project/.env
 
   redis:
     image: redis:alpine
     command: redis-server
+    env_file:
+      - ./services/yt-api/project/.env
 
   celery:
     build: ./services/yt-api
     command: celery -A project.celery_app worker -l info -E
     volumes:
       - ./services/yt-api/:/usr/src/app/
-    environment:
-      - ./.env.dev
+    env_file:
+      - ./services/yt-api/project/.env
     depends_on:
+      - web
       - redis
 
   celery-beat:
@@ -41,10 +43,24 @@ services:
     command: celery -A project.celerybeat beat -l info
     volumes:
       - ./services/yt-api/:/usr/src/app/
-    environment:
-      - ./.env.dev
+    env_file:
+      - ./services/yt-api/project/.env
     depends_on:
+      - web
+      - celery
       - redis
+  
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.9.1
+    container_name: elasticsearch
+    ports:
+      - 9200:9200
+      - 9300:9300
+    environment:
+      ES_JAVA_OPTS: '-Xms256m -Xmx256m'
+      network.bind_host: 0.0.0.0
+      network.host: 0.0.0.0
+      discovery.type: single-node
 
 volumes:
   postgres_data:

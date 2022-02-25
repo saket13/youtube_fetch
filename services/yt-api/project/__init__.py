@@ -2,6 +2,7 @@ from celery import Celery
 from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_caching import Cache
+from elasticsearch import Elasticsearch
 
 app = Flask(__name__)
 app.config.from_object("project.config.Config")
@@ -9,8 +10,7 @@ db = SQLAlchemy(app)
 cache = Cache(app)
 
 def make_celery(app):
-    celery = Celery(app.import_name, backend=app.config['CELERY_BROKER_URL'],
-                    broker=app.config['CELERY_BACKEND'], include=['project.tasks'])
+    celery = Celery(app.import_name, include=['project.tasks'])
     celery.conf.update(app.config)
     celery.config_from_object("project.config.Config")
     TaskBase = celery.Task
@@ -23,5 +23,7 @@ def make_celery(app):
     return celery
 
 celery_app = make_celery(app)
+
+es = Elasticsearch(hosts=[{"host": "elasticsearch"}], retry_on_timeout=True)
 
 from project.views import *
