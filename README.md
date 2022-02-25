@@ -6,6 +6,21 @@ API to get latest videos of certain topic from Youtube (fetched from the Youtube
 
 ![image](images/Flow.jpeg)
 
+## Tech Stack
+
+- Backend : Flask
+- Database : PostgreSQL, Redis
+- Tools : Celery, Celery Beat, Docker & Docker-Compose
+- Search : Elastic Search
+
+## Why This system is scalable ?
+
+- Celery is better than cron jobs because it can be easily distributed across machines with a centralised cache (like ElasticCache by AWS).
+- Cache also stores exhausted keys status in multi key support to save network calls when celery is deployed on multiple instances.
+- Elastic Search is the most sought open source search tool. Leverages B+ Trees indexing at its core.
+- Bulk Insert in DB allows inserting large number of items In single attempt
+- APIs are rate limited to avoid Denial Of Service (DOS attack) and also use Cache to reduce network I/O calls when fetching data.
+
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
@@ -20,11 +35,12 @@ cd youtube_fetch
 chmod +x services/yt-api/entrypoint.sh
 ```
 
-### Running Docker Containers and Creating DB
+### Running Docker Containers, Creating DB and Elastic Search Index
 
 ``` 
 docker-compose up -d --build
 docker-compose exec web python manage.py create_db
+docker-compose exec web python manage.py create_es_index
 ```
 
 ## Screenshots
@@ -72,8 +88,6 @@ In URL-2 query string to be searched.
 
 ### Making it more optimized and scalable
 
-- Use Elastic Search for bettering the search functionality
-- Maintain a centralized cache (Elastic Cache - AWS) and increase the scalability of workers by deploying on different instances
-- Use load balancer and multiple instances for serving the APIs efficiently
+
 
 
