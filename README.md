@@ -13,7 +13,7 @@ API to get latest videos of certain topic from Youtube (fetched from the Youtube
 - Tools : Celery, Celery Beat, Docker & Docker-Compose
 - Search : Elastic Search
 
-## Why This system is scalable ?
+## Why This system is Scalable ?
 
 - Celery is better than cron jobs because it can be easily distributed across machines with a centralised cache (like ElasticCache by AWS).
 - Cache also stores exhausted keys status in multi key support to save network calls when celery is deployed on multiple instances.
@@ -76,18 +76,32 @@ URL_2 = http://127.0.0.1:5000//search?q=lanka
 Here, params in URL-1 represent the page number and limit per page for pagination <br/>
 In URL-2 query string to be searched.
 
-### Progress
+## Progress
 
 - [x] Async Worker to add latest videos every min and store in DB with index
 - [x] Paginated GET API to fetch videos in descending order of published date time
-- [x] Basic search API to search the stored videos using their title and description.
+- [x] Basic search API to search the stored videos using their title and description
 - [x] Dockerize the Project
-- [x] Cache Support in APIs
+- [x] Multi Key Support
+- [x] Optimize search API for partial search in title or description
 - [ ] Dashboards view the stored videos with filters and sorting options
-- [ ] Multi Key Support
 
-### Making it more optimized and scalable
+## Further Optimizations (For this Use Case - To the best of my knowledge)
 
+- Low Level Design
+1. Using AsyncIO and its libraries for handling HTTP requests using event loop and coroutines.
+2. Implement Payload Compression to save amount of data transferred.
+3. Decoupling fetching of videos from Youtube API and saving to DB using Redis and Celery, like simple Pub-Sub to scale more.
+4. Using a faster runtime of Python something like JIT compiler.
+5. Sharing frequently accessed memory of application instances.
 
+- High Level Design
+1. Use a load balancer and a number of instances to evenly distribute load and increase efficiency of APIs
+2. Use Nginx as reverse proxy and gunicorn to manage multiple replicas of the app on same instance.
+3. RDS should be centralized too and Master-slave architecture can also be used to distribute the load.
+4. Redis Cluster should be used to avoid Redis failovers instead of single Redis node.
+5. Using ELK stack for unified logging across the product.
+
+And many more.......
 
 
