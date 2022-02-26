@@ -10,7 +10,9 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     CELERY_BACKEND = os.getenv('CELERY_BACKEND')
     CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
-    YOUTUBE_DATA_API_KEY = os.getenv('YOUTUBE_DATA_API_KEY')
+    YOUTUBE_DATA_API_KEYS_NUM = os.getenv('YOUTUBE_DATA_API_KEYS_NUM')
+    YOUTUBE_DATA_API_KEY_0 = os.getenv('YOUTUBE_DATA_API_KEY_0')
+    YOUTUBE_DATA_API_KEY_1 = os.getenv('YOUTUBE_DATA_API_KEY_1')
     task_serializer = 'json'
     result_serializer = 'json'
     accept_content = ['json']
