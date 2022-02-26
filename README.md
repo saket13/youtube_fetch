@@ -20,6 +20,32 @@ API to get latest videos of certain topic from Youtube (fetched from the Youtube
 - Elastic Search is the most sought open source search tool. Leverages B+ Trees indexing at its core.
 - Bulk Insert in DB allows inserting large number of items In single attempt
 - APIs are rate limited to avoid Denial Of Service (DOS attack) and also use Cache to reduce network I/O calls when fetching data.
+- More points below on how to optimize it more..
+
+## Project Structure
+    
+    youtube_fetch         
+    |
+    ├── Contains
+    |   └── docker-compose.yml                # Docker Compose File     
+    |   ├── .gitignore                        # Gitignore file to stop tracking unnecesarry files
+    │   ├── services                          
+    |       ├── yt-api                        
+    |           ├── Dockerfile                # Docker File
+    |           ├── entrypoint.sh             # Entrypoint for Docker Container
+    |           ├── requirements.txt          # Requirements file for the project
+    |           ├── yt-api                    
+    |               ├── project               
+    |                    ├── __init__.py      # Initialization file for all services of Youtube API service
+    |                    ├── .env             # Environment File
+    |                    ├── celerybeat.py    # Celery Beat (Scheduler) Configuration file
+    |                    ├── config.py        # Youtube service project configuration file
+    |                    ├── es_utils.py      # Elastic Search Utils file
+    |                    ├── models.py        # Models file for database
+    |                    ├── tasks.py         # Async tasks background file
+    |                    ├── utils.py         # Utilities file
+    |____________________       
+
 
 ## Getting Started
 
@@ -89,8 +115,8 @@ In URL-2 query string to be searched.
 ## Further Optimizations (For this Use Case - To the best of my knowledge)
 
 - Application Level
-1. Using AsyncIO and its libraries for handling HTTP requests using event loop and coroutines.
-2. Implement Payload Compression to save amount of data transferred.
+1. Using AsyncIO and its libraries for handling HTTP requests asynchronously using event loop and coroutines.
+2. Implementing Payload Compression to save amount of data transferred.
 3. Decoupling fetching of videos from Youtube API and saving to DB using Redis and Celery, like simple Pub-Sub to scale more.
 4. Using a faster runtime of Python something like JIT compiler.
 5. Sharing frequently accessed memory of application instances.
