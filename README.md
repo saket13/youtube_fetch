@@ -18,8 +18,8 @@ API to get latest videos of certain topic from Youtube (fetched from the Youtube
 - Cache also stores exhausted keys status in multi key support to save network calls when celery is deployed on multiple instances.
 - Elastic Search is the most sought open source search tool. Leverages B+ Trees indexing at its core.
 - Bulk Insert in DB allows inserting large number of items In single attempt
-- APIs are rate limited to avoid Denial Of Service (DOS attack) and also use Cache to reduce network I/O calls when fetching data.
-- More points below on how to optimize it more..
+- APIs use Cache to reduce network I/O calls when fetching data from Elastic Search or DB.
+- More points below on how to optimize it further..
 
 ## Project Structure
     
@@ -73,7 +73,9 @@ docker-compose exec web python manage.py create_es_index
 
 **Search API:**
 
-![Notification](images/Search.png)
+<p float="left">
+  <img src="images/Search.png" width="800" />
+</p>
 
 **Paginated Videos API:**
 
@@ -109,14 +111,13 @@ In URL-2 query string to be searched.
 - [x] Dockerize the Project
 - [x] Multi Key Support
 - [x] Optimize search API for partial search in title or description
-- [ ] Dashboards view the stored videos with filters and sorting options
 
 ## Further Optimizations (For this Use Case - To the best of my knowledge)
 
 - Application Level
 1. Using AsyncIO and its libraries for handling HTTP requests asynchronously using event loop and coroutines.
 2. Implementing Payload Compression to save amount of data transferred.
-3. Decoupling fetching of videos from Youtube API and saving to DB using Redis and Celery, like simple Pub-Sub to scale more.
+3. Decoupling fetching of videos from Youtube API and saving to DB using Redis and Celery, like a simple Pub-Sub to scale more.
 4. Using a faster runtime of Python something like JIT compiler.
 5. Sharing frequently accessed memory of application instances.
 
