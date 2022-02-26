@@ -33,17 +33,21 @@ def fetch():
         # Update publishedAfter param
         search_params.update({'publishedAfter' : latest_publish_time_iso})
         
+        # Check no of keys
         no_of_keys = int(app.config['YOUTUBE_DATA_API_KEYS_NUM'])
         key_to_be_used = None
+
+        # Iterate over all keys and check their status in Cache for Active/Expired
         for itr in range(no_of_keys):
             cached_key_result = cache.get('/keys-status/'+'YOUTUBE_DATA_API_KEY_'+str(itr))
             if cached_key_result:
-                print(cached_key_result)
+                # Check if selected key is Active and break loop if active key is found
                 if cached_key_result.get('status') == 'active':
                     key_to_be_used = 'YOUTUBE_DATA_API_KEY_' + str(itr)
                     search_params.update({'key' : app.config[key_to_be_used]})
                     break
 
+        # If cache is empty, then key_to_be_used will still be None
         if key_to_be_used is None:
             for itr in range(no_of_keys):
                 try:
@@ -60,9 +64,10 @@ def fetch():
                     print('Inactive-{}'.format(key_to_be_used))
                     cache.set('/keys-status/'+key_to_be_used, {'status' : 'expired'})
 
+        # If key_to_be_used is not None and has been selected from Cache, directly search results
         else:
             r = requests.get(search_url, params=search_params)
-            results = r.json().get('items')
+            results = r.json().get('items', None)
         
         objects = []
         for item in results:
