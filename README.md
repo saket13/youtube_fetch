@@ -88,14 +88,14 @@ In URL-2 query string to be searched.
 
 ## Further Optimizations (For this Use Case - To the best of my knowledge)
 
-- Low Level Design
+- Application Level
 1. Using AsyncIO and its libraries for handling HTTP requests using event loop and coroutines.
 2. Implement Payload Compression to save amount of data transferred.
 3. Decoupling fetching of videos from Youtube API and saving to DB using Redis and Celery, like simple Pub-Sub to scale more.
 4. Using a faster runtime of Python something like JIT compiler.
 5. Sharing frequently accessed memory of application instances.
 
-- High Level Design
+- Infra Level
 1. Use a load balancer and a number of instances to evenly distribute load and increase efficiency of APIs
 2. Use Nginx as reverse proxy and gunicorn to manage multiple replicas of the app on same instance.
 3. RDS should be centralized too and Master-slave architecture can also be used to distribute the load.

@@ -2,14 +2,14 @@ import json
 from flask import request, jsonify
 from project.models import Video
 from project import app, db, celery_app, cache
-from project.utils import search
-
+from project.es_utils import query_data_from_es
 
 @app.route('/videos')
 def fetch_videos():
     page = request.args.get('page', 1, type = int)
     limit = request.args.get('limit', 5, type = int)
 
+    # Check Cache first
     cached_videos = cache.get('/videos/'+str(page)+str(limit))
     if cached_videos:
         print('served from cache')
@@ -22,8 +22,9 @@ def fetch_videos():
     }
 
     try:
+        # Query DB if not present in cache
         videos = Video.query.order_by(Video.publish_time.desc()).paginate(page = page, per_page = limit)
-        paginated_videos =(videos.items)
+        paginated_videos = (videos.items)
         results = [video.format() for video in paginated_videos]
     
         response_dict.update({
@@ -44,12 +45,8 @@ def fetch_videos():
 def search_videos():
 
     query = request.args.get('q', type = str)
-    search_object = {'query': {'match': {'title': 'NCERT'}}}
-    search('videos', json.dumps(search_object))
-    return 'Done'
 
-    '''
-
+    # Check Cache first
     cached_videos = cache.get('/search/'+query)
     if cached_videos:
         return cached_videos
@@ -60,8 +57,9 @@ def search_videos():
     }
 
     try:
-        videos = Video.query.filter(Video.title.ilike("%{}%".format(query)))
-        results = [video.format() for video in videos]
+        # Query Elastic Search 'if not present in cache
+        search_object = {'query': {'match': {'title': query}}}
+        results = query_data_from_es('videos', json.dumps(search_object))
 
         response_dict.update({
             'success' : True,
@@ -73,6 +71,6 @@ def search_videos():
             'error' : str(e)
         })
 
+    # Set Results in Cache
     cache.set('/search/'+query, response_dict, timeout=3600)
     return response_dict
-    '''

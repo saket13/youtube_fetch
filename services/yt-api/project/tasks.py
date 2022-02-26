@@ -3,7 +3,8 @@ import requests
 from project.models import Video
 from project import app, db, celery_app
 from datetime import datetime, timedelta
-from project.utils import convert_iso_to_python, convert_python_to_iso, store_record
+from project.es_utils import push_data_to_es
+from project.utils import convert_iso_to_python, convert_python_to_iso
 
 @celery_app.task
 def fetch():
@@ -17,12 +18,18 @@ def fetch():
     }
 
     try:
+        # Latest publish time will be used for publishAfter param in Youtube data API
         latest_publish_time = datetime.now() - timedelta(minutes=30)
+
+        # If any entity exists in DB, change publish after to entity's publish time to fetch latest videos
         latest_entity = Video.query.order_by(Video.publish_time.desc()).limit(1).all()
         if len(latest_entity):
             latest_publish_time = latest_entity[0].publish_time
             
+        # Youtube data API accepts date time in ISO format only
         latest_publish_time_iso = convert_python_to_iso(latest_publish_time)
+
+        # Updating search_params for publishedAfter and key
         search_params.update({'publishedAfter' : latest_publish_time_iso,
                                'key' : app.config['YOUTUBE_DATA_API_KEY']}) 
 
@@ -39,6 +46,7 @@ def fetch():
             video_publish_time_iso = item.get('snippet').get('publishTime')
             video_publish_time = convert_iso_to_python(video_publish_time_iso)
             
+            # Create Video objects and append to list for bulk insert
             objects.append(Video(video_id=video_id, 
                                  title=video_title, 
                                  description=video_desc, 
@@ -46,9 +54,10 @@ def fetch():
                                  channel_title=channel_title,
                                  publish_time=video_publish_time))
 
-            store_record('videos', 'title', {'title':video_title})
-            store_record('descriptions', 'description', {'description':video_desc})
+            push_data_to_es('videos', 'title', {'title':video_title})
+            push_data_to_es('descriptions', 'description', {'description':video_desc})
 
+        # Bulk Insert objects in DB
         db.session.bulk_save_objects(objects)
         db.session.commit()
 
