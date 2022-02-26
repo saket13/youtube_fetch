@@ -9,9 +9,8 @@ API to get latest videos of certain topic from Youtube (fetched from the Youtube
 ## Tech Stack
 
 - Backend : Flask
-- Database : PostgreSQL, Redis
+- Database : PostgreSQL, Redis, Elastic Search
 - Tools : Celery, Celery Beat, Docker & Docker-Compose
-- Search : Elastic Search
 
 ## Why This system is Scalable ?
 
